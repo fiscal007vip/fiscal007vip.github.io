@@ -778,5 +778,56 @@
     </a>
 
 </body>
+<!-- Muro de Suscripción con Dos Botones -->
+<div id="muroSuscripcion" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 99999; display: flex; align-items: center; justify-content: center; font-family: sans-serif;">
+    <div style="background: #1e1e1e; padding: 30px; border-radius: 12px; text-align: center; max-width: 350px; width: 90%; color: #fff; box-shadow: 0 8px 25px rgba(0,0,0,0.7); border: 1px solid #333;">
+        <h2 style="margin-bottom: 15px; font-size: 22px; color: #ff3333;">¡Acceso Bloqueado!</h2>
+        <p style="margin-bottom: 20px; font-size: 14px; color: #b0b0b0; line-height: 1.5;">Completa las suscripciones requeridas para desbloquear el contenido.</p>
+        
+        <!-- Primer botón de suscripción -->
+        <a href="https://youtube.com/@fiscalff2019?si=xdIY2BNzoD2TuadW" target="_blank" onclick="verificarPaso1()" id="btn1" style="display: block; background: #ff0000; color: #fff; padding: 10px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-bottom: 10px; font-size: 14px;">1. Suscribirme al Canal 1</a>
+        
+        <!-- Segundo botón de suscripción -->
+        <a href="https://youtube.com/@ytarthur2020vip?si=4li5HPH4JeujyPi1" target="_blank" onclick="verificarPaso2()" id="btn2" style="display: block; background: #ff0000; color: #fff; padding: 10px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-bottom: 15px; font-size: 14px;">2. Suscribirme al Canal 2</a>
+        
+        <!-- Botón final de entrar (bloqueado hasta completar ambos) -->
+        <button id="btnEntrar" disabled style="background: #333; color: #777; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: not-allowed; transition: 0.3s;" onclick="quitarMuro()">3. Entrar a la Web</button>
+    </div>
+</div>
+
+<script>
+let paso1Listo = false;
+let paso2Listo = false;
+
+function verificarPaso1() {
+    paso1Listo = true;
+    document.getElementById('btn1').style.background = '#28a745';
+    document.getElementById('btn1').innerText = '¡Canal 1 Listo!';
+    comprobarTodo();
+}
+
+function verificarPaso2() {
+    paso2Listo = true;
+    document.getElementById('btn2').style.background = '#28a745';
+    document.getElementById('btn2').innerText = '¡Canal 2 Listo!';
+    comprobarTodo();
+}
+
+function comprobarTodo() {
+    if (paso1Listo && paso2Listo) {
+        const botonEntrar = document.getElementById('btnEntrar');
+        botonEntrar.disabled = false;
+        botonEntrar.style.background = '#28a745';
+        botonEntrar.style.color = '#fff';
+        botonEntrar.style.cursor = 'pointer';
+        botonEntrar.innerText = '¡Todo listo, Entrar a la Web!';
+    }
+}
+
+function quitarMuro() {
+    document.getElementById('muroSuscripcion').style.display = 'none';
+}
+</script>
+</script>
 <script id="_wauhsm">var _wau = _wau || []; _wau.push(["dynamic", "xg98m16gdu", "hsm", "434343ffffff", "small"]);</script><script async src="//waust.at/d.js"></script>
 </html>
