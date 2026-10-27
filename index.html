@@ -5,6 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FISCAL007VIP - Recursos Digitales para Jugadores</title>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-F3SJQ0F7KW"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-F3SJQ0F7KW');
+      gtag('event', 'page_view');
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -178,6 +188,94 @@
             gap: 8px;
             font-size: 13px;
             color: #ccc;
+        }
+
+        .visitor-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 999px;
+            font-size: 13px;
+            color: #f4f4f4;
+            backdrop-filter: blur(2px);
+        }
+
+        .visitor-counter .signal {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        .visitor-counter strong {
+            color: #ffca28;
+        }
+
+        .stats-float {
+            position: fixed;
+            right: 20px;
+            bottom: 120px;
+            z-index: 2200;
+            background: rgba(18, 18, 18, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.35);
+            padding: 14px 16px;
+            min-width: 190px;
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+
+        .stats-float-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #ffca28;
+        }
+
+        .stats-float-header .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            animation: pulse 1.8s infinite;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            font-size: 12px;
+            color: #ddd;
+        }
+
+        .stats-row:first-of-type {
+            border-top: none;
+        }
+
+        .stats-row strong {
+            color: #ff3b1f;
+            font-size: 17px;
         }
 
         .stars {
@@ -594,7 +692,27 @@
             <div class="stars">★★★</div>
             <span><strong>Pago protegido</strong> y contenido claro</span>
         </div>
+
+        <div class="live-counter" aria-live="polite">
+            <span class="dot"></span>
+            <span>Personas online: <strong id="liveVisitors">1</strong></span>
+        </div>
     </section>
+
+    <div class="stats-float" aria-live="polite">
+        <div class="stats-float-header">
+            <span class="dot"></span>
+            <span>Live stats</span>
+        </div>
+        <div class="stats-row">
+            <span>Online</span>
+            <strong id="onlineStat">1</strong>
+        </div>
+        <div class="stats-row">
+            <span>Hoy</span>
+            <strong id="todayStat">12</strong>
+        </div>
+    </div>
 
     <!-- Catalog Section -->
     <section class="catalog" id="catalogo">
@@ -888,6 +1006,84 @@ setInterval(ejecutarCarrusel, 3000);
         </svg>
     </a>
 
+    <script>
+        (() => {
+            const counterEl = document.getElementById('liveVisitors');
+            const onlineEl = document.getElementById('onlineStat');
+            const todayEl = document.getElementById('todayStat');
+            const storageKey = 'fiscal007vip_presence';
+            const sessionId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+            const ttlMs = 30000;
+
+            const readUsers = () => {
+                try {
+                    return JSON.parse(localStorage.getItem(storageKey) || '{}');
+                } catch (error) {
+                    return {};
+                }
+            };
+
+            const writeUsers = (users) => {
+                localStorage.setItem(storageKey, JSON.stringify(users));
+            };
+
+            const refreshCounter = () => {
+                const users = readUsers();
+                const now = Date.now();
+                const active = Object.entries(users).filter(([, ts]) => now - ts < ttlMs);
+                if (active.length !== Object.keys(users).length) {
+                    writeUsers(Object.fromEntries(active));
+                }
+                const total = Math.max(1, Object.keys(readUsers()).length);
+                if (counterEl) counterEl.textContent = total;
+                if (onlineEl) onlineEl.textContent = total;
+            };
+
+            const registerUser = () => {
+                const users = readUsers();
+                users[sessionId] = Date.now();
+                writeUsers(users);
+                refreshCounter();
+            };
+
+            const removeUser = () => {
+                const users = readUsers();
+                delete users[sessionId];
+                writeUsers(users);
+                refreshCounter();
+            };
+
+            const todayKey = 'fiscal007vip_today_visits';
+            const today = new Date().toDateString();
+            const dayStore = JSON.parse(localStorage.getItem(todayKey) || '{}');
+            if (!dayStore.date || dayStore.date !== today) {
+                localStorage.setItem(todayKey, JSON.stringify({ date: today, count: 1 }));
+            } else {
+                dayStore.count = Number(dayStore.count || 1) + 1;
+                localStorage.setItem(todayKey, JSON.stringify({ date: today, count: dayStore.count }));
+            }
+            if (todayEl) {
+                const data = JSON.parse(localStorage.getItem(todayKey) || '{"count":1}');
+                todayEl.textContent = data.count || 1;
+            }
+
+            registerUser();
+            refreshCounter();
+
+            const interval = setInterval(() => {
+                registerUser();
+            }, 15000);
+
+            window.addEventListener('storage', () => refreshCounter());
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') registerUser();
+            });
+            window.addEventListener('beforeunload', () => {
+                clearInterval(interval);
+                removeUser();
+            });
+        })();
+    </script>
 </body>
 <!-- Muro de Suscripción con Tres Botones -->
 <div id="muroSuscripcion" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 99999; display: flex; align-items: center; justify-content: center; font-family: sans-serif;">
